@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Unique} from 'typeorm'; 
-import { Especialidade } from '../../especialidade/entities/especialidade.entity'; 
+import { Especialidade } from '../especialidade/especialidade.entity'; 
 
 @Entity('medicos')
 @Unique(['crm'])

@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { OneToMany } from 'typeorm';
-import { Medico } from '../../medico/entities/medico.entity';  
+import { Medico } from '../medico/medico.entity';  
 @Entity('especialidades')
 export class Especialidade { 
 	@PrimaryGeneratedColumn()

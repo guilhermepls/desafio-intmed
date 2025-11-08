@@ -4,8 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EspecialidadeModule } from './especialidade/entities/especialidade.module';
-import { MedicoModule } from './medico/medico.module';
+import { EspecialidadeModule } from './modules/especialidade/especialidade.module';
+import { MedicoModule } from './modules/medico/medico.module';
+import { AgendaModule } from './modules/agenda/agenda.module';
 @Module({
   imports: [
 	ConfigModule.forRoot({ isGlobal: true,}),
@@ -14,6 +15,7 @@ import { MedicoModule } from './medico/medico.module';
 	}),
 	EspecialidadeModule,
 	MedicoModule,
+	AgendaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

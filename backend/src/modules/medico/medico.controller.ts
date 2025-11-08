@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
 import { MedicoService } from './medico.service';
-import { CreateMedicoDto } from "./entities/dto/create-medico.dto";
+import { CreateMedicoDto } from "./dto/create-medico.dto";
 
 @Controller('medicos')
 export class MedicoController {
@@ -21,4 +21,3 @@ export class MedicoController {
 		return this.medicoService.findOne(id);
 	}
 }
-

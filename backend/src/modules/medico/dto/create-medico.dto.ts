@@ -21,4 +21,3 @@ export class CreateMedicoDto {
 	@IsNotEmpty()
 	especialidadeId: number;
 }
-
