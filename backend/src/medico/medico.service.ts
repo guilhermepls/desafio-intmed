@@ -12,6 +12,9 @@ export class MedicoService {
 	) {}
 
 	async create(dto: CreateMedicoDto): Promise<Medico> {
+		const medicoExistente = await this.medicoRepository.findOne({
+			where: { crm: dto.crm }
+		})
 		const medico = this.medicoRepository.create(dto);
 		return await this.medicoRepository.save(medico);
 	}
