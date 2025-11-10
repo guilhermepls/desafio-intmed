@@ -32,7 +32,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
 ### 1. Clonar o Repositório
 
 ```bash
-git clone <url-do-seu-repositorio-git>
+git clone https://github.com/guilhermepls/desafio-intmed.git
 cd desafio-intmed/backend
 ```
 
@@ -40,7 +40,7 @@ cd desafio-intmed/backend
 
 ### 2. Configure variáveis de ambiente
 
-- Adicione essas informações em um arquivo .env (dentro de desafio-intmed/backend): 
+- Adicione essas informações em um arquivo .env, *(dentro de desafio-intmed/backend)*: 
 
 ```bash
 DATABASE_USER=postgres
