@@ -1,15 +1,17 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Consulta } from './consulta.entity';
 import { MoreThan, Repository, Equal } from 'typeorm';
 import { CreateConsultaDto } from './dto/create-consulta.dto';
 import { AgendaService } from '../agenda/agenda.service';
+import { In } from 'typeorm';
   
 @Injectable()
 export class ConsultaService {
 	constructor(
 	  @InjectRepository(Consulta)
 	  private consultaRepository: Repository<Consulta>,
+	  @Inject(forwardRef(() => AgendaService))
 	  private agendaService: AgendaService,
 	) {}
   
@@ -93,4 +95,32 @@ export class ConsultaService {
 	  }
 	  return consulta;
 	}
+
+	async findBookedSlotsByAgendaIds(
+		agendaIds: number[],
+	  ): Promise<Map<number, Set<string>>> {
+		if (agendaIds.length === 0) {
+		  return new Map();
+		}
+	
+		const consultas = await this.consultaRepository.find({
+		  where: {
+			agendaId: In(agendaIds), 
+		  },
+		  select: ['agendaId', 'horario'], 
+		});
+	
+		const bookedSlotsMap = new Map<number, Set<string>>();
+		for (const consulta of consultas) {
+		  let bookedSlots = bookedSlotsMap.get(consulta.agendaId);
+
+		  if (!bookedSlots) {
+			bookedSlots = new Set();
+			bookedSlotsMap.set(consulta.agendaId, bookedSlots);
+		  }
+			bookedSlots.add(consulta.horario);
+		}
+	
+		return bookedSlotsMap;
+	  }
 }

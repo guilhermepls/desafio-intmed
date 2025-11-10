@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe, ValidationPipe } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, ParseIntPipe, ValidationPipe, Query } from "@nestjs/common";
 import { AgendaService } from './agenda.service';
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
+import { FindAgendasQueryDto } from "./dto/find-agendas-query.dto";
 
 @Controller('agendas')
 export class AgendaController {
@@ -12,8 +13,8 @@ export class AgendaController {
 	}
 
 	@Get()
-	findAll() {
-		return this.agendaService.findAll();
+	findAll(@Query(ValidationPipe) query: FindAgendasQueryDto) {
+		return this.agendaService.findAll(query);
 	}
 
 	@Get(':id')

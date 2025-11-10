@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConsultaService } from './consulta.service';
 import { ConsultaController } from './consulta.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,7 +8,7 @@ import { AgendaModule } from '../agenda/agenda.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Consulta]),
-    AgendaModule, 
+    forwardRef(() => AgendaModule),
   ],
   controllers: [ConsultaController],
   providers: [ConsultaService],
