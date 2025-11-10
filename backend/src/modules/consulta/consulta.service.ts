@@ -1,0 +1,96 @@
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Consulta } from './consulta.entity';
+import { MoreThan, Repository, Equal } from 'typeorm';
+import { CreateConsultaDto } from './dto/create-consulta.dto';
+import { AgendaService } from '../agenda/agenda.service';
+  
+@Injectable()
+export class ConsultaService {
+	constructor(
+	  @InjectRepository(Consulta)
+	  private consultaRepository: Repository<Consulta>,
+	  private agendaService: AgendaService,
+	) {}
+  
+	async create(dto: CreateConsultaDto): Promise<Consulta> {
+	  const agenda = await this.agendaService.findOne(dto.agendaId);
+  
+	  const horarioFormatado = `${dto.horario}:00`;
+	  if (!agenda.horarios.includes(horarioFormatado)) {
+		throw new BadRequestException('Horário não disponível na agenda deste médico');
+	  }
+  
+	  const agora = new Date();
+	  const diaConsulta = new Date(`${agenda.dia}T${horarioFormatado}`);
+  
+	  if (diaConsulta < agora) {
+		throw new BadRequestException('Não é possível marcar consultas em datas passadas');
+	  }
+  
+	  const consultaExistente = await this.consultaRepository.findOne({
+		where: {
+		  agendaId: dto.agendaId,
+		  horario: horarioFormatado,
+		},
+	  });
+  
+	  if (consultaExistente) {
+		throw new ConflictException('Este horário já foi agendado');
+	  }
+  
+	  const novaConsulta = this.consultaRepository.create({
+		agendaId: dto.agendaId,
+		horario: horarioFormatado,
+		dia: agenda.dia,
+		medicoId: agenda.medicoId, 
+	  });
+  
+	  await this.consultaRepository.save(novaConsulta);
+  
+	  return this.findOne(novaConsulta.id);
+	}
+  
+	async findAll(): Promise<Consulta[]> {
+	  const agora = new Date();
+	  const horaAtual = agora.toTimeString().split(' ')[0];
+	  const diaAtual = agora.toISOString().split('T')[0];
+  
+	  return this.consultaRepository.find({
+		relations: ['medico'], 
+		where: [
+		  { dia: MoreThan(diaAtual) },
+		  { dia: Equal(diaAtual), horario: MoreThan(horaAtual) },
+		],
+		order: {
+		  dia: 'ASC',
+		  horario: 'ASC',
+		},
+	  });
+	}
+  
+	async remove(id: number): Promise<void> {
+	  const consulta = await this.findOne(id);
+  
+	  const agora = new Date();
+	  const diaConsulta = new Date(`${consulta.dia}T${consulta.horario}`);
+  
+	  if (diaConsulta < agora) {
+		throw new BadRequestException('Não é possível desmarcar uma consulta que já aconteceu');
+	  }
+  
+	  await this.consultaRepository.remove(consulta);
+	}
+
+	async findOne(id: number): Promise<Consulta> {
+	  const consulta = await this.consultaRepository.findOne({
+		where: { id },
+		relations: ['medico'], 
+	  });
+  
+	  if (!consulta) {
+		throw new NotFoundException(`Consulta com ID ${id} não encontrada`);
+	  }
+	  return consulta;
+	}
+}
