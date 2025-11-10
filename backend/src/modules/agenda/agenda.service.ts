@@ -3,26 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from "typeorm";
 import { Agenda } from "./agenda.entity";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
-import { Medico } from "../medico/medico.entity";
+import { MedicoService } from "../medico/medico.service";
 
 @Injectable()
 export class AgendaService {
 	constructor(
 		@InjectRepository(Agenda)
 		private agendaRepository: Repository<Agenda>,
-		@InjectRepository(Medico)
-		private medicoRepository: Repository<Medico>,
+		private medicoService: MedicoService,
+
 	) {}
 
 	async create(dto: CreateAgendaDto): Promise<Agenda> {
-		const medico = await this.medicoRepository.findOne({
-			where: { id: dto.medicoId }
-		});
-
-		if (!medico) {
-			throw new NotFoundException('Médico não encontrado');
-		}
-
+		const medico = await this.medicoService.findOne(dto.medicoId);
 		const hoje = new Date();
 		hoje.setHours(0, 0, 0, 0);
 		const diaAgenda = new Date(dto.dia);
@@ -52,11 +45,15 @@ export class AgendaService {
 		});
 	}
 
-	async findOne(id: number): Promise<Agenda | null> {
-		return await this.agendaRepository.findOne({
+	async findOne(id: number): Promise<Agenda> {
+		const agenda = await this.agendaRepository.findOne({
 			where: { id },
 			relations: ['medico'],
 		});
+
+		if(!agenda) {
+			throw new NotFoundException(`Agenda com ID ${id} não encontrada`);
+		}
+		return agenda;
 	}
 }
-

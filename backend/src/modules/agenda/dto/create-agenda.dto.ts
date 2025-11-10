@@ -13,4 +13,3 @@ export class CreateAgendaDto {
 	@ArrayMinSize(1)
 	horarios: string[];
 }
-

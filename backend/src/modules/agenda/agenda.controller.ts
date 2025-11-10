@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, ParseIntPipe, ValidationPipe } from "@nestjs/common";
 import { AgendaService } from './agenda.service';
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 
@@ -7,7 +7,7 @@ export class AgendaController {
 	constructor(private readonly agendaService: AgendaService) {}
 
 	@Post()
-	create(@Body() dto: CreateAgendaDto) {
+	create(@Body(ValidationPipe) dto: CreateAgendaDto) {
 		return this.agendaService.create(dto);
 	}
 
