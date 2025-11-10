@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { Especialidade } from "src/modules/especialidade/especialidade.entity";
 import { Medico } from "src/modules/medico/medico.entity";
 import { Agenda } from "src/modules/agenda/agenda.entity";
+import { Consulta } from "src/modules/consulta/consulta.entity"
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -17,7 +18,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>("DATABASE_USER"),
       password: this.configService.get<string>("DATABASE_PASSWORD") || "",
       database: this.configService.get<string>("DATABASE_NAME"),
-      entities: [Especialidade, Medico, Agenda],
+      entities: [Especialidade, Medico, Agenda, Consulta],
       synchronize: this.configService.get<string>("NODE_ENV") !== "production",
       logging: this.configService.get<string>("NODE_ENV") === "development",
     };

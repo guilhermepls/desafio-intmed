@@ -14,8 +14,27 @@ export class ConsultaService {
 	  @Inject(forwardRef(() => AgendaService))
 	  private agendaService: AgendaService,
 	) {}
+
+	private _formatConsultaResponse(consulta: Consulta) {
+		if (!consulta.medico) {
+		  return null;
+		}
+	
+		return {
+		  id: consulta.id,
+		  dia: consulta.dia,
+		  horario: consulta.horario,
+		  data_agendamento: consulta.data_agendamento,
+		  medico: {
+			id: consulta.medico.id,
+			crm: consulta.medico.crm,
+			nome: consulta.medico.nome,
+			email: consulta.medico.email,
+		  },
+		};
+	  }
   
-	async create(dto: CreateConsultaDto): Promise<Consulta> {
+	async create(dto: CreateConsultaDto): Promise<any> {
 	  const agenda = await this.agendaService.findOne(dto.agendaId);
   
 	  const horarioFormatado = `${dto.horario}:00`;
@@ -50,15 +69,16 @@ export class ConsultaService {
   
 	  await this.consultaRepository.save(novaConsulta);
   
-	  return this.findOne(novaConsulta.id);
+	  const consultaCompleta = await this.findOne(novaConsulta.id);
+	  return this._formatConsultaResponse(consultaCompleta);	
 	}
   
-	async findAll(): Promise<Consulta[]> {
+	async findAll(): Promise<any[]> {
 	  const agora = new Date();
 	  const horaAtual = agora.toTimeString().split(' ')[0];
 	  const diaAtual = agora.toISOString().split('T')[0];
   
-	  return this.consultaRepository.find({
+	  const consultas = await this.consultaRepository.find({
 		relations: ['medico'], 
 		where: [
 		  { dia: MoreThan(diaAtual) },
@@ -69,6 +89,8 @@ export class ConsultaService {
 		  horario: 'ASC',
 		},
 	  });
+
+	  return consultas.map(this._formatConsultaResponse);
 	}
   
 	async remove(id: number): Promise<void> {

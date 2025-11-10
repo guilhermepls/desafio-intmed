@@ -15,7 +15,7 @@ export class Consulta {
 	horario: string;
 
 	@CreateDateColumn({ name: 'data_agendamento' })
-	dataAgendamento: Date;
+	data_agendamento: Date;
   
 	@Column({ name: 'agenda_id' })
 	agendaId: number;

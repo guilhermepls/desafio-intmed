@@ -18,6 +18,28 @@ export class AgendaService {
 
 	) {}
 
+	private _formatAgendaResponse(agenda: Agenda) {
+		if (!agenda.medico) {
+		  return null;
+		}
+		const horariosFormatados = agenda.horarios.map((horario) =>
+		  horario.substring(0, 5),
+		);
+
+		return {
+			id: agenda.id,
+			medico: {
+			  id: agenda.medico.id,
+			  crm: agenda.medico.crm,
+			  nome: agenda.medico.nome,
+			  email: agenda.medico.email,
+			},
+			dia: agenda.dia,
+			horarios: horariosFormatados,
+		  };
+		}
+	
+
 	async create(dto: CreateAgendaDto): Promise<Agenda> {
 		const medico = await this.medicoService.findOne(dto.medicoId);
 		const hoje = new Date();
@@ -43,7 +65,7 @@ export class AgendaService {
 		return await this.agendaRepository.save(agenda);
 	}
 
-	async findAll(query: FindAgendasQueryDto): Promise<Agenda[]> {
+	async findAll(query: FindAgendasQueryDto): Promise<any[]> {
 		const { medico, crm, data_inicio, data_final } = query
 
 		const queryBuilder = this.agendaRepository.createQueryBuilder('agenda'); 
@@ -96,7 +118,7 @@ export class AgendaService {
         	agendasDisponiveis.push(agenda);
       	}
     }
-    	return agendasDisponiveis;
+    	return agendasDisponiveis.map(this._formatAgendaResponse);
 		
 	}
 
