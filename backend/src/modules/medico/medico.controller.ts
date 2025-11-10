@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, ParseIntPipe, Query, ValidationPipe} from "@nestjs/common";
 import { MedicoService } from './medico.service';
 import { CreateMedicoDto } from "./dto/create-medico.dto";
 
@@ -7,13 +7,16 @@ export class MedicoController {
 	constructor(private readonly medicoService: MedicoService) {}
 
 	@Post()
-	create(@Body() dto: CreateMedicoDto) {
+	create(@Body(ValidationPipe) dto: CreateMedicoDto) {
 		return this.medicoService.create(dto);
 	}
 
 	@Get()
-	findAll() {
-		return this.medicoService.findAll();
+	findAll(
+		@Query('especialidadeId', new ParseIntPipe({ optional: true}))
+		especialidadeId?: number,
+	) {
+		return this.medicoService.findAll(especialidadeId);
 	}
 
 	@Get(':id')

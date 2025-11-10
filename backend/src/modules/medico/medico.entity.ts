@@ -16,9 +16,6 @@ export class Medico {
 	@Column({ nullable: true})
 	email: string;
 
-	@Column({ nullable: true})
-	telefone: string; 
-
 	@ManyToOne(() => Especialidade)
 	@JoinColumn({ name: 'especialidade_id'})
 	especialidade: Especialidade; 

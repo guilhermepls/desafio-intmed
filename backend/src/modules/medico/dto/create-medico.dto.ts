@@ -12,11 +12,7 @@ export class CreateMedicoDto {
 	@IsEmail()
 	@IsOptional()
 	email?: string;
-
-	@IsString()
-	@IsOptional()
-	telefone?: string;
-
+	
 	@IsNumber()
 	@IsNotEmpty()
 	especialidadeId: number;
