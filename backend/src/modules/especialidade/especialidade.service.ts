@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from "typeorm";
 import { Especialidade } from "./especialidade.entity";
@@ -12,12 +12,18 @@ export class EspecialidadeService {
 	Repository<Especialidade>, 
 	) {}
 
-		async create(dto: CreateEspecialidadeDto): 
-	Promise<Especialidade> { 
-		const especialidade = 
-	this.especialidadeRepository.create(dto); 
-		return await 
-	this.especialidadeRepository.save(especialidade); 
+	async create(dto: CreateEspecialidadeDto): Promise<Especialidade> { 
+		const especialidade = this.especialidadeRepository.create(dto); 
+
+		try {
+			return await this.especialidadeRepository.save(especialidade); 
+
+		} catch (error) {
+			if(error.code === '23505') {
+			throw new ConflictException('Já existe uma especialidade com este nome');
+			}
+				throw error;
+		}
 	}
 
 	async findAll(): Promise<Especialidade[]> { 

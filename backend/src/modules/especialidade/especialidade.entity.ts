@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { OneToMany } from 'typeorm';
 import { Medico } from '../medico/medico.entity';  
 @Entity('especialidades')
+@Unique(['nome'])
 export class Especialidade { 
 	@PrimaryGeneratedColumn()
 	id: number; 

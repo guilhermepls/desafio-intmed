@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Controller, Get, Post, Body, ValidationPipe } from "@nestjs/common";
 import { EspecialidadeService } from './especialidade.service'; 
 import { CreateEspecialidadeDto } from "./dto/create-especialidade.dto";
 
@@ -7,7 +7,7 @@ export class EspecialidadesController {
 	constructor(private readonly especialidadeService: EspecialidadeService) {}
 
 	@Post()
-	create(@Body() dto: CreateEspecialidadeDto) { 
+	create(@Body(ValidationPipe) dto: CreateEspecialidadeDto) { 
 		return this.especialidadeService.create(dto); 
 	}
 
