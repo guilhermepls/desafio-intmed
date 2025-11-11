@@ -11,6 +11,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
+	const nodeEnv = this.configService.get<string>("NODE_ENV", "development");
     return {
       type: "postgres",
       host: this.configService.get<string>("DATABASE_HOST"),
@@ -18,9 +19,9 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>("DATABASE_USER"),
       password: this.configService.get<string>("DATABASE_PASSWORD") || "",
       database: this.configService.get<string>("DATABASE_NAME"),
-      entities: [Especialidade, Medico, Agenda, Consulta],
-      synchronize: this.configService.get<string>("NODE_ENV") !== "production",
-      logging: this.configService.get<string>("NODE_ENV") === "development",
+	  entities: [__dirname + '/../**/*.entity{.ts,.js}'],      
+	  synchronize: nodeEnv !== "production",
+      logging: nodeEnv === "development",
     };
   }
 }

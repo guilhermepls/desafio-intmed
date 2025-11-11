@@ -37,13 +37,12 @@ export class ConsultaService {
 	async create(dto: CreateConsultaDto): Promise<any> {
 	  const agenda = await this.agendaService.findOne(dto.agendaId);
   
-	  const horarioFormatado = `${dto.horario}:00`;
-	  if (!agenda.horarios.includes(horarioFormatado)) {
+	  if (!agenda.horarios.includes(dto.horario)) {
 		throw new BadRequestException('Horário não disponível na agenda deste médico');
 	  }
   
 	  const agora = new Date();
-	  const diaConsulta = new Date(`${agenda.dia}T${horarioFormatado}`);
+	  const diaConsulta = new Date(`${agenda.dia}T${dto.horario}`);
   
 	  if (diaConsulta < agora) {
 		throw new BadRequestException('Não é possível marcar consultas em datas passadas');
@@ -52,7 +51,7 @@ export class ConsultaService {
 	  const consultaExistente = await this.consultaRepository.findOne({
 		where: {
 		  agendaId: dto.agendaId,
-		  horario: horarioFormatado,
+		  horario: dto.horario,
 		},
 	  });
   
@@ -62,7 +61,7 @@ export class ConsultaService {
   
 	  const novaConsulta = this.consultaRepository.create({
 		agendaId: dto.agendaId,
-		horario: horarioFormatado,
+		horario: dto.horario,
 		dia: agenda.dia,
 		medicoId: agenda.medicoId, 
 	  });
