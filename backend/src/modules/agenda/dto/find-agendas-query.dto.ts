@@ -1,17 +1,19 @@
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsArray, IsDateString, IsNumber, IsOptional, } from 'class-validator';
 
 export class FindAgendasQueryDto {
   	@IsOptional()
-  	@IsArray()
-  	@IsNumber({}, { each: true })
   	@Type(() => Number)
+	@Transform(({ value }) => (value && !Array.isArray(value) ? [value] : value))
+	@IsArray()
+	@IsNumber({}, { each: true })
   	medico?: number[];
 
   	@IsOptional()
+	@Type(() => Number)
+  	@Transform(({ value }) => (value && !Array.isArray(value) ? [value] : value))
   	@IsArray()
   	@IsNumber({}, { each: true })
-  	@Type(() => Number)
   	crm?: number[];
 
   	@IsOptional()
